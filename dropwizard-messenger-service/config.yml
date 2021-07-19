@@ -1,0 +1,16 @@
+server:
+  maxQueuedRequests: 4096
+  minThreads: 256
+  maxThreads: 2048
+  applicationConnectors:
+    - type: h2
+      port: 443
+      keyStorePath: ../cert/keystore2.p12
+      keyStorePassword: password
+      maxConcurrentStreams: 2048
+      initialStreamRecvWindow: 65535
+
+logging:
+  level: ERROR
+  loggers:
+    com.kucuk: WARN

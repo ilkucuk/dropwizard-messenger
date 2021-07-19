@@ -6,6 +6,14 @@ Simple Dropwizard application for load testing
 
 sudo java -jar dropwizard-messenger-service-1.0-SNAPSHOT.jar server config.yml 
 
+## Update /etc/hosts file 
+
+[ip of the host]	kucuk.com
+[ip of the host]	kucuk2.com
+ex:
+192.168.56.4	kucuk.com
+192.168.56.5	kucuk2.com
+
 ## Sample Request
 
 ```{ "RequestId":1625466189714,
@@ -20,5 +28,9 @@ sudo java -jar dropwizard-messenger-service-1.0-SNAPSHOT.jar server config.yml
 }
 
 ```
+
+# How to Run Load Test
+
+jmeter -n -t dw-load.jmx -l run1.log -e -o run1
 
 

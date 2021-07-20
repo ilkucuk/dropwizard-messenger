@@ -24,9 +24,8 @@
           <createDependencyReducedPom>true</createDependencyReducedPom>
           <transformers>
             <transformer />
-            <transformer />
             <transformer>
-              <resource>META-INF/cxf/bus-extensions.txt</resource>
+              <mainClass>${mainClass}</mainClass>
             </transformer>
           </transformers>
           <filters>
@@ -48,6 +47,7 @@
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>
+              <mainClass>${mainClass}</mainClass>
             </manifest>
           </archive>
         </configuration>
@@ -95,4 +95,7 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <properties>
+    <mainClass>com.kucuk.dw.client.DropwizardClient</mainClass>
+  </properties>
 </project>

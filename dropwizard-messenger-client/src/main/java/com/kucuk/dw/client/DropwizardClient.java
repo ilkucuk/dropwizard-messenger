@@ -1,48 +1,57 @@
 package com.kucuk.dw.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class DropwizardClient {
 
-    public static void main(String[] args) throws JsonProcessingException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
 
-        CreateMessageRequest request = CreateMessageRequest.builder()
-                .requestId(12345L)
-                .author("ikucuk@gmail.com")
-                .title("Sample Message Title")
-                .content("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-                .time(Instant.now().toEpochMilli())
-                .sleepPeriod(-2000)
-                .sampleBooleanField(true)
-                .sampleDoubleField(3.14d)
-                .sampleIntegerField(12345)
-                .build();
+        int sleepPeriod = -100;
+        int threadCount = 500;
+        int callCount = 100;
 
-        ObjectMapper mapper = new ObjectMapper();
-        //Converting the Object to JSONString
-        String jsonString = mapper.writeValueAsString(request);
-        System.out.println(jsonString);
+        if (args.length > 0) {
+            sleepPeriod = Integer.parseInt(args[0]);
+        }
+        if (args.length > 1) {
+            threadCount = Integer.parseInt(args[1]);
+        }
+        if (args.length >2) {
+            callCount = Integer.parseInt(args[2]);
+        }
 
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("https://kucuk.com").path("message");
-        Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-        Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+        String uri = "https://kucuk.com/message";
+        String author = "ikucuk@gmail.com";
+        String title = "Sample Message Title";
+        String content = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-        System.out.println(response.getStatus());
-        CreateMessageResponse entity = response.readEntity(CreateMessageResponse.class);
-        System.out.println(entity.getHash());
+        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
+        List<Future<MessageServiceCaller.CallResult>> results = new ArrayList<>(threadCount);
+
+        for (int i = 0; i < threadCount; i++) {
+            MessageServiceCaller caller = new MessageServiceCaller(callCount, uri, 12345L, author, title, content, sleepPeriod);
+            Future<MessageServiceCaller.CallResult> callResultFuture = executor.submit(caller);
+            results.add(callResultFuture);
+        }
+        executor.shutdown();
+        if (executor.awaitTermination(500, TimeUnit.SECONDS)) {
+            executor.shutdownNow();
+        }
+
+        for (Future<MessageServiceCaller.CallResult> resultFuture : results) {
+            MessageServiceCaller.CallResult result = resultFuture.get();
+            System.out.println("Success Rate: " + result.getSuccessCount() +
+                    " Duration: " + result.getDuration() / threadCount);
+        }
 
         Arguments arguments = new Arguments();
         arguments.addArgument("host", "kucuk.com");

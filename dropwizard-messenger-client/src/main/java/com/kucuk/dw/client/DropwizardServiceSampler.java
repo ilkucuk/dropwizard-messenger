@@ -16,7 +16,6 @@ import java.time.Instant;
 
 public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
 
-
     Client client = ClientBuilder.newClient();
     WebTarget target;
 
@@ -43,7 +42,6 @@ public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
         defaultParameters.addArgument("title", "Quest For Performance");
         defaultParameters.addArgument("content", "I don't know what I am doing :(");
         defaultParameters.addArgument("sleepPeriod", "0");
-
         return defaultParameters;
     }
 
@@ -53,7 +51,6 @@ public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
         result.sampleStart();
 
         try {
-
             long requestId = Integer.parseInt(javaSamplerContext.getParameter("requestId"));
             String author = javaSamplerContext.getParameter("author");
             String title = javaSamplerContext.getParameter("title");

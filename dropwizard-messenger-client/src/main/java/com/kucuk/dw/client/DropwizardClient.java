@@ -16,7 +16,7 @@ public class DropwizardClient {
     public static void main(String[] args) throws InterruptedException, ExecutionException {
 
         int sleepPeriod = -100;
-        int threadCount = 500;
+        int threadCount = 1;
         int callCount = 100;
 
         if (args.length > 0) {
@@ -61,6 +61,7 @@ public class DropwizardClient {
         arguments.addArgument("title", "Message Title For Medium Message");
         arguments.addArgument("content", "Message Content");
         arguments.addArgument("sleepPeriod", "100");
+        arguments.addArgument("loopCount", "10");
         JavaSamplerContext context = new JavaSamplerContext(arguments);
         DropwizardServiceSampler sampler = new DropwizardServiceSampler();
         sampler.setupTest(context);

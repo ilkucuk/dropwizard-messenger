@@ -5,32 +5,7 @@ import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.Invocation;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.time.Instant;
-
 public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
-
-    Client client = ClientBuilder.newClient();
-    WebTarget target;
-
-    @Override
-    public void setupTest(JavaSamplerContext context) {
-        String host = context.getParameter("host");
-        int port = Integer.parseInt(context.getParameter("port"));
-        target = client.target("https://"+ host +":" + port).path("message");
-        super.setupTest(context);
-    }
-
-    @Override
-    public void teardownTest(JavaSamplerContext context) {
-        client.close();
-    }
 
     @Override
     public Arguments getDefaultParameters() {
@@ -42,6 +17,7 @@ public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
         defaultParameters.addArgument("title", "Quest For Performance");
         defaultParameters.addArgument("content", "I don't know what I am doing :(");
         defaultParameters.addArgument("sleepPeriod", "0");
+        defaultParameters.addArgument("loopCount", "10");
         return defaultParameters;
     }
 
@@ -57,25 +33,18 @@ public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
             String content = javaSamplerContext.getParameter("content");
             int sleepPeriod = Integer.parseInt(javaSamplerContext.getParameter("sleepPeriod"));
 
-            Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-            CreateMessageRequest request = CreateMessageRequest.builder()
-                    .requestId(requestId)
-                    .author(author)
-                    .title(title)
-                    .content(content)
-                    .time(Instant.now().toEpochMilli())
-                    .sleepPeriod(sleepPeriod)
-                    .sampleBooleanField(true)
-                    .sampleDoubleField(3.14d)
-                    .sampleIntegerField(12345)
-                    .build();
+            String host = javaSamplerContext.getParameter("host");
+            int port = Integer.parseInt(javaSamplerContext.getParameter("port"));
+            String uri = "https://"+ host +":" + port + "/message";
 
-            invocationBuilder.header("Content-type", "application/json");
-            Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
+            int loopCount = Integer.parseInt(javaSamplerContext.getParameter("loopCount"));
+
+            MessageServiceCaller caller = new MessageServiceCaller(loopCount, uri, requestId, author, title, content, sleepPeriod);
+            MessageServiceCaller.CallResult callResult = caller.call();
+
             result.sampleEnd();
-            result.setSuccessful(response.getStatus() == 200);
-            CreateMessageResponse entity = response.readEntity(CreateMessageResponse.class);
-            result.setResponseData(entity.getHash(), "UTF-8");
+            result.setSuccessful(callResult.getSuccessCount() > 0);
+            result.setResponseData(callResult.getSuccessCount() + " " + callResult.getDuration(), "UTF-8");
             result.setResponseCodeOK(); // 200 code
 
         } catch (Exception e) {

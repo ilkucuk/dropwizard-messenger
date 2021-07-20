@@ -50,7 +50,7 @@ public class DropwizardClient {
         for (Future<MessageServiceCaller.CallResult> resultFuture : results) {
             MessageServiceCaller.CallResult result = resultFuture.get();
             System.out.println("Success Rate: " + result.getSuccessCount() +
-                    " Duration: " + result.getDuration() / threadCount);
+                    " Duration: " + result.getDuration() / callCount);
         }
 
         Arguments arguments = new Arguments();

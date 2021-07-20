@@ -7,6 +7,8 @@ import org.apache.jmeter.samplers.SampleResult;
 
 public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
 
+    private MessageServiceCaller caller;
+
     @Override
     public Arguments getDefaultParameters() {
         Arguments defaultParameters = new Arguments();
@@ -22,24 +24,38 @@ public class DropwizardServiceSampler extends AbstractJavaSamplerClient {
     }
 
     @Override
+    public void setupTest(JavaSamplerContext context) {
+        long requestId = Integer.parseInt(context.getParameter("requestId"));
+        String author = context.getParameter("author");
+        String title = context.getParameter("title");
+        String content = context.getParameter("content");
+        int sleepPeriod = Integer.parseInt(context.getParameter("sleepPeriod"));
+
+        String host = context.getParameter("host");
+        int port = Integer.parseInt(context.getParameter("port"));
+        String uri = "https://"+ host +":" + port + "/message";
+
+        int loopCount = Integer.parseInt(context.getParameter("loopCount"));
+
+        caller = new MessageServiceCaller(loopCount, uri, requestId, author, title, content, sleepPeriod);
+
+        super.setupTest(context);
+    }
+
+    /* Implements JavaSamplerClient.teardownTest(JavaSamplerContext) */
+    @Override
+    public void teardownTest(JavaSamplerContext context) {
+        caller.close();
+        super.teardownTest(context);
+    }
+
+
+    @Override
     public SampleResult runTest(JavaSamplerContext javaSamplerContext) {
         SampleResult result = new SampleResult();
         result.sampleStart();
 
         try {
-            long requestId = Integer.parseInt(javaSamplerContext.getParameter("requestId"));
-            String author = javaSamplerContext.getParameter("author");
-            String title = javaSamplerContext.getParameter("title");
-            String content = javaSamplerContext.getParameter("content");
-            int sleepPeriod = Integer.parseInt(javaSamplerContext.getParameter("sleepPeriod"));
-
-            String host = javaSamplerContext.getParameter("host");
-            int port = Integer.parseInt(javaSamplerContext.getParameter("port"));
-            String uri = "https://"+ host +":" + port + "/message";
-
-            int loopCount = Integer.parseInt(javaSamplerContext.getParameter("loopCount"));
-
-            MessageServiceCaller caller = new MessageServiceCaller(loopCount, uri, requestId, author, title, content, sleepPeriod);
             MessageServiceCaller.CallResult callResult = caller.call();
 
             result.sampleEnd();

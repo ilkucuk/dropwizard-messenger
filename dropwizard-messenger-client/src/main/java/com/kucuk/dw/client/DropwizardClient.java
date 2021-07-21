@@ -42,7 +42,7 @@ public class DropwizardClient {
             results.add(callResultFuture);
         }
         executor.shutdown();
-        if (executor.awaitTermination(500, TimeUnit.SECONDS)) {
+        if (executor.awaitTermination(1800, TimeUnit.SECONDS)) {
             executor.shutdownNow();
         }
 

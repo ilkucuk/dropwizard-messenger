@@ -1,8 +1,5 @@
 package com.kucuk.dw.client;
 
-import org.apache.jmeter.config.Arguments;
-import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -15,9 +12,9 @@ public class DropwizardClient {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
 
-        int sleepPeriod = -100;
-        int threadCount = 1;
-        int callCount = 100;
+        int sleepPeriod = -10;
+        int threadCount = 500;
+        int callCount = 200;
 
         if (args.length > 0) {
             sleepPeriod = Integer.parseInt(args[0]);
@@ -25,9 +22,11 @@ public class DropwizardClient {
         if (args.length > 1) {
             threadCount = Integer.parseInt(args[1]);
         }
-        if (args.length >2) {
+        if (args.length > 2) {
             callCount = Integer.parseInt(args[2]);
         }
+
+        System.out.println("SleepPeriod: " + sleepPeriod + " ThreadCount: " + threadCount + " CallCount: " + callCount);
 
         String uri = "https://kucuk.com/message";
         String author = "ikucuk@gmail.com";
@@ -47,24 +46,13 @@ public class DropwizardClient {
             executor.shutdownNow();
         }
 
+        double total = 0;
         for (Future<MessageServiceCaller.CallResult> resultFuture : results) {
             MessageServiceCaller.CallResult result = resultFuture.get();
             System.out.println("Success Rate: " + result.getSuccessCount() +
                     " Duration: " + result.getDuration() / callCount);
+            total += ((double) result.getDuration()) / callCount;
         }
-
-        Arguments arguments = new Arguments();
-        arguments.addArgument("host", "kucuk.com");
-        arguments.addArgument("port", "443");
-        arguments.addArgument("requestId", "1000");
-        arguments.addArgument("author", "ikucuk@gmail.com");
-        arguments.addArgument("title", "Message Title For Medium Message");
-        arguments.addArgument("content", "Message Content");
-        arguments.addArgument("sleepPeriod", "100");
-        arguments.addArgument("loopCount", "10");
-        JavaSamplerContext context = new JavaSamplerContext(arguments);
-        DropwizardServiceSampler sampler = new DropwizardServiceSampler();
-        sampler.setupTest(context);
-        sampler.runTest(context);
+        System.out.println("Average Call Duration: " + total / results.size());
     }
 }

@@ -14,12 +14,12 @@ import java.io.Closeable;
 import java.time.Instant;
 import java.util.concurrent.Callable;
 
-
 public class MessageServiceCaller implements Callable<MessageServiceCaller.CallResult>, Closeable {
 
     private final int loopCount;
     private final Client client;
-    private final String uri;
+    private final WebTarget target;
+
     private final String author;
     private final String title;
     private final String content;
@@ -41,7 +41,7 @@ public class MessageServiceCaller implements Callable<MessageServiceCaller.CallR
         this.content = content;
         this.sleepPeriod = sleepPeriod;
         this.client = ClientBuilder.newClient();
-        this.uri = uri;
+        target = client.target(uri);
     }
 
 
@@ -51,14 +51,14 @@ public class MessageServiceCaller implements Callable<MessageServiceCaller.CallR
         int success = 0;
         int failure = 0;
 
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+        Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON)
+                 .header("Connection", "keep-alive");
+
         long start = Instant.now().toEpochMilli();
         for(int i=0; i<loopCount; i++) {
             CreateMessageRequest request = createRequest();
-
-            WebTarget target = client.target(uri);
-            Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
             Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
-
             if (processResponse(response)) {
                 success++;
             } else {

@@ -1,11 +1,16 @@
-How to run the load generator 
+##How to run the load generator 
 
-java -jar target/dropwizard-messenger-client-1.0-SNAPSHOT.jar [ms] [thread_count] [call_count] [protocol] [repeat]
+### java -jar target/dropwizard-messenger-client-1.0-SNAPSHOT.jar [ms] [thread_count] [call_count] [protocol] [repeat]
 
-[ms] : miliseconds of how much service should sleep; if negative it will be forwarded to he second service after multiplied with -1
+
+[ms] : milliseconds of how much service should sleep; if negative it will be forwarded to he second service after multiplied with -1
+
 [thread_count] : calling thread count
+
 [call_count] : how many calls should be made with one http client
+
 [protocol] : http1 or http2
+
 [repeat] : how many times to repeat the load test
 
 Ex

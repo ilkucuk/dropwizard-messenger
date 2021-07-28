@@ -1,0 +1,13 @@
+server:
+  maxQueuedRequests: 4096
+  minThreads: 256
+  maxThreads: 2048
+  applicationConnectors:
+    - type: https
+      port: 443
+      keyStorePath: ../../cert/keystore.p12
+      keyStorePassword: password
+logging:
+  level: INFO
+  loggers:
+    com.kucuk: INFO

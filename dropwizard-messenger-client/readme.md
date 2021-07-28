@@ -1,6 +1,6 @@
 ##How to run the load generator 
 
-### java -jar target/dropwizard-messenger-client-1.0-SNAPSHOT.jar [ms] [thread_count] [call_count] [protocol] [repeat]
+### java -jar target/dropwizard-messenger-client-1.0-SNAPSHOT.jar [ms] [thread_count] [call_count] [protocol] [repeat] [messageCount]
 
 
 [ms] : milliseconds of how much service should sleep; if negative it will be forwarded to he second service after multiplied with -1
@@ -13,10 +13,13 @@
 
 [repeat] : how many times to repeat the load test
 
+[messageCount]: number of messages(id, time, content) returned during the call. 
+
 Ex
 ```
-dropwizard-messenger-client % java -jar target/dropwizard-messenger-client-1.0-SNAPSHOT.jar -100 400 200 http1 3
-SleepPeriod: -100 ThreadCount: 400 CallCount: 200 loop: 3
-Average Call Duration: 475.14076249999994 Success: 80000 Failure: 0 AC: -1481311414
-Average Call Duration: 455.854375 Success: 80000 Failure: 0 AC: 2117694476
-Average Call Duration: 455.9126125000004 Success: 80000 Failure: 0 AC: 1461026781```
+java -jar dropwizard-messenger-client-1.0-SNAPSHOT.jar -10 20 100 http1 5 1
+Protocol: http1 MessageCount: 1 SleepPeriod: -10 ThreadCount: 20 CallCount: 100 loop: 3
+Average Call Duration: 769.7165 Success: 2000 Failure: 0 AC: 1433119262
+Average Call Duration: 690.0190000000001 Success: 2000 Failure: 0 AC: 1579209561
+Average Call Duration: 670.1859999999999 Success: 2000 Failure: 0 AC: 1717269710
+```

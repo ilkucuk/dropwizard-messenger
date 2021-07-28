@@ -24,6 +24,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
     private final String content;
     private final int sleepPeriod;
     private final String uri;
+    private final int messageCount;
 
     private long requestId;
     private boolean sampleBoolean = false;
@@ -32,7 +33,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
 
     private long responseAccumulator = 0;
 
-    public MessageServiceHttp2Caller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod) {
+    public MessageServiceHttp2Caller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod, int messageCount) {
         this.loopCount = loopCount;
         this.requestId = requestId;
         this.author = author;
@@ -45,6 +46,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
         httpClient = new HttpClient(new HttpClientTransportOverHTTP2(http2Client));
         httpClient.setFollowRedirects(false);
         objectMapper = new ObjectMapper();
+        this.messageCount = messageCount;
     }
 
     @Override
@@ -109,6 +111,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
                 .sampleBooleanField(sampleBoolean)
                 .sampleDoubleField(sampleDouble)
                 .sampleIntegerField(sampleInteger)
+                .messageCount(messageCount)
                 .build();
     }
 

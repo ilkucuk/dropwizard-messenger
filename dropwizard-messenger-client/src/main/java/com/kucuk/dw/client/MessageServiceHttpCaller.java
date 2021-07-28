@@ -19,7 +19,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
     private final String title;
     private final String content;
     private final int sleepPeriod;
-
+    private final int messageCount;
     private long requestId;
     private boolean sampleBoolean = false;
     private double sampleDouble = 1.0d;
@@ -27,7 +27,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
 
     private long responseAccumulator = 0;
 
-    public MessageServiceHttpCaller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod) {
+    public MessageServiceHttpCaller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod, int messageCount) {
         this.loopCount = loopCount;
         this.requestId = requestId;
         this.author = author;
@@ -36,6 +36,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
         this.sleepPeriod = sleepPeriod;
         this.client = ClientBuilder.newClient();
         target = client.target(uri);
+        this.messageCount = messageCount;
     }
 
 
@@ -97,6 +98,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
                 .sampleBooleanField(sampleBoolean)
                 .sampleDoubleField(sampleDouble)
                 .sampleIntegerField(sampleInteger)
+                .messageCount(messageCount)
                 .build();
     }
 }

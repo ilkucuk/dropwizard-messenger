@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 @Getter
 @Builder
@@ -30,4 +29,8 @@ public class CreateMessageResponse {
 
     @JsonProperty("SampleBooleanField")
     Boolean sampleBooleanField;
+
+    @JsonProperty("Messages")
+    Message[] messages;
 }
+

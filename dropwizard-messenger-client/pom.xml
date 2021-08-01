@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>dropwizard-messenger</artifactId>
-        <groupId>org.example</groupId>
+        <groupId>com.kucuk</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
+    <modelVersion>4.0.0</modelVersion>
     <artifactId>dropwizard-messenger-client</artifactId>
 
     <properties>
@@ -54,6 +54,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.kucuk</groupId>
+            <artifactId>dropwizard-messenger-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
@@ -84,25 +90,25 @@
             Uncomment this when you have added toolchains.xml in ~/.m2
             See: https://dzone.com/articles/guide-for-supporting-multiple-versions-of-java-8-1
             -->
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-toolchains-plugin</artifactId>-->
-                <!--<version>3.0.0</version>-->
-                <!--<executions>-->
-                    <!--<execution>-->
-                        <!--<goals>-->
-                            <!--<goal>toolchain</goal>-->
-                        <!--</goals>-->
-                        <!--<configuration>-->
-                            <!--<toolchains>-->
-                                <!--<jdk>-->
-                                    <!--<version>11</version>-->
-                                <!--</jdk>-->
-                            <!--</toolchains>-->
-                        <!--</configuration>-->
-                    <!--</execution>-->
-                <!--</executions>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                        <configuration>
+                            <toolchains>
+                                <jdk>
+                                    <version>11</version>
+                                </jdk>
+                            </toolchains>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.4</version>

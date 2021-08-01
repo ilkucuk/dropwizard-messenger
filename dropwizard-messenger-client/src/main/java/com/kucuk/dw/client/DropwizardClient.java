@@ -16,7 +16,6 @@ public class DropwizardClient {
         int callCount = 200;
         String type = "http1";
         int loop = 1;
-        int messageCount = 100;
 
         if (args.length > 0) {
             sleepPeriod = Integer.parseInt(args[0]);
@@ -33,11 +32,8 @@ public class DropwizardClient {
         if (args.length > 4) {
             loop = Integer.parseInt(args[4]);
         }
-        if (args.length > 5) {
-            messageCount = Integer.parseInt(args[5]);
-        }
 
-        System.out.println("Protocol: " + type + " MessageCount: " + messageCount + " SleepPeriod: " + sleepPeriod + " ThreadCount: " + threadCount + " CallCount: " + callCount + " loop: " + loop);
+        System.out.println("SleepPeriod: " + sleepPeriod + " ThreadCount: " + threadCount + " CallCount: " + callCount + " loop: " + loop);
 
         String uri = "https://kucuk.com/message";
         String author = "ikucuk@gmail.com";
@@ -51,9 +47,9 @@ public class DropwizardClient {
             for (int i = 0; i < threadCount; i++) {
                 MessageServiceCaller caller;
                 if (type.equals("http2")) {
-                    caller = new MessageServiceHttp2Caller(callCount, uri, 12345L, author, title, content, sleepPeriod, messageCount);
+                    caller = new MessageServiceHttp2Caller(callCount, uri, 12345L, author, title, content, sleepPeriod);
                 } else {
-                    caller = new MessageServiceHttpCaller(callCount, uri, 12345L, author, title, content, sleepPeriod, messageCount);
+                    caller = new MessageServiceHttpCaller(callCount, uri, 12345L, author, title, content, sleepPeriod);
                 }
                 Future<CallResult> callResultFuture = executor.submit(caller);
                 results.add(callResultFuture);

@@ -1,6 +1,8 @@
 package com.kucuk.dw.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kucuk.dw.service.api.CreateMessageRequest;
+import com.kucuk.dw.service.api.CreateMessageResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -24,7 +26,6 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
     private final String content;
     private final int sleepPeriod;
     private final String uri;
-    private final int messageCount;
 
     private long requestId;
     private boolean sampleBoolean = false;
@@ -33,7 +34,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
 
     private long responseAccumulator = 0;
 
-    public MessageServiceHttp2Caller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod, int messageCount) {
+    public MessageServiceHttp2Caller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod) {
         this.loopCount = loopCount;
         this.requestId = requestId;
         this.author = author;
@@ -46,7 +47,6 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
         httpClient = new HttpClient(new HttpClientTransportOverHTTP2(http2Client));
         httpClient.setFollowRedirects(false);
         objectMapper = new ObjectMapper();
-        this.messageCount = messageCount;
     }
 
     @Override
@@ -59,7 +59,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
         httpClient.start();
 
         long start = Instant.now().toEpochMilli();
-        for(int i=0; i<loopCount; i++) {
+        for (int i = 0; i < loopCount; i++) {
             CreateMessageRequest createMessageRequest = createRequest();
             byte[] json = objectMapper.writeValueAsBytes(createMessageRequest);
 
@@ -89,7 +89,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
     private boolean processResponse(ContentResponse response) throws IOException {
         if (response.getStatus() == 200) {
             CreateMessageResponse createMessageResponse = objectMapper.readValue(response.getContent(), CreateMessageResponse.class);
-            responseAccumulator += createMessageResponse.responseId;
+            responseAccumulator += createMessageResponse.getResponseId() > 0 ? 1 : 0;
             return true;
         } else
             return false;
@@ -111,7 +111,6 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
                 .sampleBooleanField(sampleBoolean)
                 .sampleDoubleField(sampleDouble)
                 .sampleIntegerField(sampleInteger)
-                .messageCount(messageCount)
                 .build();
     }
 

@@ -29,8 +29,4 @@ public class CreateMessageResponse {
 
     @JsonProperty("SampleBooleanField")
     Boolean sampleBooleanField;
-
-    @JsonProperty("Messages")
-    Message[] messages;
 }
-

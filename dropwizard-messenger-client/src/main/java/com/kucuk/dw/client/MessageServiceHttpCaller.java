@@ -1,5 +1,8 @@
 package com.kucuk.dw.client;
 
+import com.kucuk.dw.service.api.CreateMessageRequest;
+import com.kucuk.dw.service.api.CreateMessageResponse;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -19,7 +22,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
     private final String title;
     private final String content;
     private final int sleepPeriod;
-    private final int messageCount;
+
     private long requestId;
     private boolean sampleBoolean = false;
     private double sampleDouble = 1.0d;
@@ -27,7 +30,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
 
     private long responseAccumulator = 0;
 
-    public MessageServiceHttpCaller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod, int messageCount) {
+    public MessageServiceHttpCaller(int loopCount, String uri, long requestId, String author, String title, String content, int sleepPeriod) {
         this.loopCount = loopCount;
         this.requestId = requestId;
         this.author = author;
@@ -36,7 +39,6 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
         this.sleepPeriod = sleepPeriod;
         this.client = ClientBuilder.newClient();
         target = client.target(uri);
-        this.messageCount = messageCount;
     }
 
 
@@ -51,7 +53,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
                  .header("Connection", "keep-alive");
 
         long start = Instant.now().toEpochMilli();
-        for(int i=0; i<loopCount; i++) {
+        for (int i = 0; i < loopCount; i++) {
             CreateMessageRequest request = createRequest();
 
             Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
@@ -76,7 +78,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
     private boolean processResponse(Response response) {
         if (response.getStatus() == 200) {
             CreateMessageResponse createMessageResponse = response.readEntity(CreateMessageResponse.class);
-            responseAccumulator += createMessageResponse.responseId;
+            responseAccumulator += createMessageResponse.getResponseId() > 0 ? 1 : 0;
             return true;
         } else
             return false;
@@ -98,7 +100,6 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
                 .sampleBooleanField(sampleBoolean)
                 .sampleDoubleField(sampleDouble)
                 .sampleIntegerField(sampleInteger)
-                .messageCount(messageCount)
                 .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.kucuk.dw.client;
+package com.kucuk.dw.service.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,14 +10,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
+public class ListMessageRequest {
 
-    @JsonProperty("MessageId")
-    Long id;
+    @JsonProperty("PageSize")
+    int pageSize;
 
-    @JsonProperty("Content")
-    String content;
-
-    @JsonProperty("Time")
-    Long time;
+    @JsonProperty("Author")
+    String author;
 }

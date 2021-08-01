@@ -38,7 +38,4 @@ public class CreateMessageRequest {
 
     @JsonProperty("SampleBooleanField")
     Boolean sampleBooleanField;
-
-    @JsonProperty("MessageCount")
-    Integer messageCount;
 }

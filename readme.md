@@ -33,9 +33,3 @@ ex:
 }
 
 ```
-
-# How to Run Load Test
-
-jmeter -n -t dw-load.jmx -l run1.log -e -o run1
-
-

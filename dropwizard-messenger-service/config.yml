@@ -5,7 +5,7 @@ server:
   applicationConnectors:
     - type: h2
       port: 443
-      keyStorePath: ../cert/keystore2.p12
+      keyStorePath: ../cert/keystore.p12
       keyStorePassword: password
       maxConcurrentStreams: 2048
       initialStreamRecvWindow: 65535

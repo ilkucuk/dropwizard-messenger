@@ -3,9 +3,13 @@ package com.kucuk.dw.service.resources;
 import com.kucuk.dw.service.OtherMessageServiceClientFactory;
 import com.kucuk.dw.service.api.CreateMessageRequest;
 import com.kucuk.dw.service.api.CreateMessageResponse;
+import com.kucuk.dw.service.api.ListMessageRequest;
+import com.kucuk.dw.service.api.ListMessageResponse;
 import com.kucuk.dw.service.api.Message;
+import com.kucuk.dw.service.dao.MessageDoa;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,6 +19,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
+import java.util.List;
 
 import static com.kucuk.dw.service.DropwizardServerApplication.MESSAGE_CONTENT_ARRAY;
 import static com.kucuk.dw.service.DropwizardServerApplication.NO_MESSAGES;
@@ -52,7 +57,6 @@ public class MessageResource {
                     .sampleBooleanField(true)
                     .sampleDoubleField(1d)
                     .sampleIntegerField(1)
-                    .messageCount(request.getMessageCount())
                     .build();
 
             Response otherResponse = invocationBuilder.post(Entity.entity(otherRequest, MediaType.APPLICATION_JSON));
@@ -60,14 +64,6 @@ public class MessageResource {
             sampleDoubleField = entity.getSampleDoubleField();
         }
 
-        Message[] messages = new Message[request.getMessageCount()];
-        for (int i = 0; i < request.getMessageCount(); i++) {
-            messages[i] = Message.builder()
-                    .id(Instant.now().toEpochMilli())
-                    .content(MESSAGE_CONTENT_ARRAY[i % NO_MESSAGES])
-                    .time(Instant.now().toEpochMilli())
-                    .build();
-        }
         return CreateMessageResponse.builder()
                 .responseId(Instant.now().toEpochMilli())
                 .hash(sha256hex)
@@ -75,7 +71,15 @@ public class MessageResource {
                 .sampleBooleanField(!request.getSampleBooleanField())
                 .sampleDoubleField(sampleDoubleField)
                 .sampleIntegerField(request.getSampleIntegerField() * 2)
+                .build();
+    }
+
+    @GET
+    public ListMessageResponse listMessages(ListMessageRequest request) {
+        List<Message> messages = MessageDoa.getMessages(request.getPageSize());
+        return ListMessageResponse.builder()
                 .messages(messages)
+                .hasNext(true)
                 .build();
     }
 }

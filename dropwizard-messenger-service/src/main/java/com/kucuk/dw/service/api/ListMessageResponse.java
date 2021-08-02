@@ -6,24 +6,18 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
+public class ListMessageResponse {
 
-    @JsonProperty("MessageId")
-    Long messageId;
+    @JsonProperty("HasNext")
+    boolean hasNext;
 
-    @JsonProperty("Title")
-    String title;
-
-    @JsonProperty("Content")
-    String content;
-
-    @JsonProperty("Author")
-    String author;
-
-    @JsonProperty("Time")
-    Long time;
+    @JsonProperty("Messages")
+    List<Message> messages;
 }
+

@@ -1,5 +1,6 @@
 package com.kucuk.dw.service;
 
+import com.kucuk.dw.service.resources.BlockingResource;
 import com.kucuk.dw.service.resources.MessageResource;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -25,6 +26,7 @@ public class DropwizardServerApplication extends Application<DropwizardServerCon
     public void run(final DropwizardServerConfiguration configuration,
                     final Environment environment) {
         environment.jersey().register(MessageResource.class);
+        environment.jersey().register(BlockingResource.class);
         System.out.println("Service Started... v1");
     }
 

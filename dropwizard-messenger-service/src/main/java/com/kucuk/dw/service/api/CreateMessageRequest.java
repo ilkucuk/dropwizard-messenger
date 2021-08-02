@@ -27,8 +27,8 @@ public class CreateMessageRequest {
     @JsonProperty("Time")
     Long time;
 
-    @JsonProperty("SleepPeriod")
-    Integer sleepPeriod;
+    @JsonProperty("blockingCallPeriod")
+    Integer blockingCallPeriod;
 
     @JsonProperty("SampleDoubleField")
     Double sampleDoubleField;

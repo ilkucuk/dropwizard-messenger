@@ -17,6 +17,12 @@ public class ListMessageResponse {
     @JsonProperty("HasNext")
     boolean hasNext;
 
+    @JsonProperty("NextPageToken")
+    String nextPageToken;
+
+    @JsonProperty("Time")
+    Long time;
+
     @JsonProperty("Messages")
     List<Message> messages;
 }

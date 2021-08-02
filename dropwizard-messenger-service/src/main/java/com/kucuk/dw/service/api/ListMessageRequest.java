@@ -15,6 +15,12 @@ public class ListMessageRequest {
     @JsonProperty("PageSize")
     int pageSize;
 
+    @JsonProperty("PageToken")
+    String pageToken;
+
     @JsonProperty("Author")
     String author;
+
+    @JsonProperty("blockingCallPeriod")
+    Integer blockingCallPeriod;
 }

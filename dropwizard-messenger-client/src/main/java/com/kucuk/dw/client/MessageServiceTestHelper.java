@@ -9,18 +9,18 @@ public class MessageServiceTestHelper {
     private final String author;
     private final String title;
     private final String content;
-    private final int sleepPeriod;
+    private final int blockingCallPeriod;
 
     private long requestId;
     private boolean sampleBoolean = false;
     private double sampleDouble = 1.0d;
     private int sampleInteger = 0;
 
-    public MessageServiceTestHelper(String author, String title, String content, int sleepPeriod) {
+    public MessageServiceTestHelper(String author, String title, String content, int blockingCallPeriod) {
         this.author = author;
         this.title = title;
         this.content = content;
-        this.sleepPeriod = sleepPeriod;
+        this.blockingCallPeriod = blockingCallPeriod;
     }
 
     public CreateMessageRequest createRequest() {
@@ -35,7 +35,7 @@ public class MessageServiceTestHelper {
                 .title(title)
                 .content(content)
                 .time(Instant.now().toEpochMilli())
-                .sleepPeriod(sleepPeriod)
+                .blockingCallPeriod(blockingCallPeriod)
                 .sampleBooleanField(sampleBoolean)
                 .sampleDoubleField(sampleDouble)
                 .sampleIntegerField(sampleInteger)

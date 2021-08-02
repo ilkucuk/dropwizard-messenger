@@ -5,7 +5,6 @@ import com.kucuk.dw.service.api.CreateMessageRequest;
 import com.kucuk.dw.service.api.CreateMessageResponse;
 import com.kucuk.dw.service.api.Message;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.text.RandomStringGenerator;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -17,21 +16,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
 
+import static com.kucuk.dw.service.DropwizardServerApplication.MESSAGE_CONTENT_ARRAY;
+import static com.kucuk.dw.service.DropwizardServerApplication.NO_MESSAGES;
+
 @Path("/message")
 @Produces(MediaType.APPLICATION_JSON)
 public class MessageResource {
 
-    private final static int NO_MESSAGES = 1000;
-    private static final int MESSAGE_LEN = 1000;
-    private static String[] MESSAGE_CONTENT_ARRAY;
-
     public MessageResource() {
-        MESSAGE_CONTENT_ARRAY = new String[NO_MESSAGES];
-        RandomStringGenerator generator = new RandomStringGenerator.Builder()
-                .withinRange('a', 'z').build();
-        for (int i = 0; i < NO_MESSAGES; i++) {
-            MESSAGE_CONTENT_ARRAY[i] = generator.generate(MESSAGE_LEN);
-        }
     }
 
     @POST

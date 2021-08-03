@@ -1,4 +1,4 @@
-package com.kucuk.dw.client;
+package com.kucuk.dw.client.caller;
 
 import java.util.concurrent.Callable;
 

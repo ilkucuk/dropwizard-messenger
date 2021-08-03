@@ -41,7 +41,8 @@ public class MessageResource {
                 .build();
     }
 
-    @GET
+    @POST
+    @Path("/list")
     public ListMessageResponse listMessages(ListMessageRequest request) {
         long blockingCallTimeStamp = makeBlockingCall(request.getBlockingCallPeriod());
         List<Message> messages = MessageDoa.getMessages(request.getPageSize());

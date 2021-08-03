@@ -1,5 +1,6 @@
-package com.kucuk.dw.client;
+package com.kucuk.dw.client.caller;
 
+import com.kucuk.dw.client.MessageServiceTestHelper;
 import com.kucuk.dw.service.api.CreateMessageRequest;
 import com.kucuk.dw.service.api.CreateMessageResponse;
 
@@ -12,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
 
-public class MessageServiceHttpCaller implements MessageServiceCaller {
+public class MessageServiceCreateCaller implements MessageServiceCaller {
 
     private final int loopCount;
     private final MessageServiceTestHelper testHelper;
@@ -21,7 +22,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
 
     private long responseAccumulator = 0;
 
-    public MessageServiceHttpCaller(int loopCount, MessageServiceTestHelper testHelper, String uri) {
+    public MessageServiceCreateCaller(int loopCount, MessageServiceTestHelper testHelper, String uri) {
         this.loopCount = loopCount;
         this.testHelper = testHelper;
         this.client = ClientBuilder.newClient();
@@ -35,7 +36,7 @@ public class MessageServiceHttpCaller implements MessageServiceCaller {
         int failure = 0;
 
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON)
-                 .header("Connection", "keep-alive");
+                .header("Connection", "keep-alive");
 
         long start = Instant.now().toEpochMilli();
         for (int i = 0; i < loopCount; i++) {

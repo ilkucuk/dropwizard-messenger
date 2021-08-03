@@ -1,8 +1,9 @@
-package com.kucuk.dw.client;
+package com.kucuk.dw.client.caller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kucuk.dw.service.api.CreateMessageRequest;
-import com.kucuk.dw.service.api.CreateMessageResponse;
+import com.kucuk.dw.client.MessageServiceTestHelper;
+import com.kucuk.dw.service.api.ListMessageRequest;
+import com.kucuk.dw.service.api.ListMessageResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -15,7 +16,7 @@ import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
 import java.io.IOException;
 import java.time.Instant;
 
-public class MessageServiceHttp2Caller implements MessageServiceCaller {
+public class MessageServiceHttp2ListCaller implements MessageServiceCaller {
 
     private final int loopCount;
     private final MessageServiceTestHelper testHelper;
@@ -25,7 +26,7 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
 
     private long responseAccumulator = 0;
 
-    public MessageServiceHttp2Caller(int loopCount, MessageServiceTestHelper testHelper, String uri) {
+    public MessageServiceHttp2ListCaller(int loopCount, MessageServiceTestHelper testHelper, String uri) {
         this.loopCount = loopCount;
         this.testHelper = testHelper;
 
@@ -44,8 +45,8 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
 
         long start = Instant.now().toEpochMilli();
         for (int i = 0; i < loopCount; i++) {
-            CreateMessageRequest createMessageRequest = testHelper.createRequest();
-            byte[] json = objectMapper.writeValueAsBytes(createMessageRequest);
+            ListMessageRequest listMessageRequest = testHelper.newListMessageRequest();
+            byte[] json = objectMapper.writeValueAsBytes(listMessageRequest);
 
             Request request = httpClient.newRequest(uri)
                     .method(HttpMethod.POST)
@@ -72,8 +73,8 @@ public class MessageServiceHttp2Caller implements MessageServiceCaller {
 
     private boolean processResponse(ContentResponse response) throws IOException {
         if (response.getStatus() == 200) {
-            CreateMessageResponse createMessageResponse = objectMapper.readValue(response.getContent(), CreateMessageResponse.class);
-            responseAccumulator += createMessageResponse.getResponseId() > 0 ? 1 : 0;
+            ListMessageResponse listMessageResponse = objectMapper.readValue(response.getContent(), ListMessageResponse.class);
+            responseAccumulator += listMessageResponse.getTime() > 0 ? 1 : 0;
             return true;
         } else
             return false;

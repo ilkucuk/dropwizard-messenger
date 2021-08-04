@@ -9,7 +9,6 @@ import com.kucuk.dw.service.api.Message;
 import com.kucuk.dw.service.dao.MessageDoa;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -29,8 +28,9 @@ public class MessageResource {
     @POST
     public CreateMessageResponse createMessage(CreateMessageRequest request) {
 
-        long blockingCallTimeStamp = makeBlockingCall(request.getBlockingCallPeriod());
-        String sha256hex = DigestUtils.sha256Hex(request.getRequestId() + request.getTitle() + request.getContent() + request.getAuthor());
+        final long blockingCallTimeStamp = makeBlockingCall(request.getBlockingCallPeriod());
+        final String sha256hex = DigestUtils.sha256Hex(request.getRequestId() + request.getTitle() + request.getContent() + request.getAuthor());
+
         return CreateMessageResponse.builder()
                 .responseId(Instant.now().toEpochMilli())
                 .hash(sha256hex)
@@ -44,8 +44,9 @@ public class MessageResource {
     @POST
     @Path("/list")
     public ListMessageResponse listMessages(ListMessageRequest request) {
-        long blockingCallTimeStamp = makeBlockingCall(request.getBlockingCallPeriod());
-        List<Message> messages = MessageDoa.getMessages(request.getPageSize());
+        final long blockingCallTimeStamp = makeBlockingCall(request.getBlockingCallPeriod());
+        final List<Message> messages = MessageDoa.getMessages(request.getPageSize());
+
         return ListMessageResponse.builder()
                 .messages(messages)
                 .hasNext(true)

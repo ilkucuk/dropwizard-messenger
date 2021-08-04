@@ -42,7 +42,7 @@ public class DropwizardClient {
         }
 
         System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
-        ResultWriter resultWriter = new ResultWriter("TestRun-" + Instant.now().toString()+ ".txt");
+        ResultWriter resultWriter = new ResultWriter("TestRun-" + Instant.now().toString() + ".txt");
 
 
         for (TestRunConfig testRunConfig : clientConfig.getTestRunConfigs()) {
@@ -51,12 +51,12 @@ public class DropwizardClient {
                     " ConcurrentClientThreadCount: " + testRunConfig.getConcurrentClientThreadCount() +
                     " CallCountForASingleClient: " + testRunConfig.getCallCountForASingleClient() +
                     " Caller" + testRunConfig.getCaller() +
-                    " NumberOfRuns: " + testRunConfig.getNumberOfRuns());
+                    " NumberOfRuns: " + testRunConfig.getNumberOfRuns() +
+                    " PageSize: " + testRunConfig.getPageSize());
 
             MessageServiceTestHelper testHelper = new MessageServiceTestHelper(testRunConfig.getBlockingCallPeriod(), testRunConfig.getPageSize());
             resultWriter.write("---Test--Run---");
             resultWriter.write("Config: " + testRunConfig);
-
 
             for (int j = 0; j < testRunConfig.getNumberOfRuns(); j++) {
 
@@ -68,16 +68,16 @@ public class DropwizardClient {
 
                     switch (testRunConfig.getCaller()) {
                         case "MessageServiceCreateCaller":
-                            caller = new MessageServiceCreateCaller(testRunConfig.getConcurrentClientThreadCount(), testHelper, "https://kucuk.com/message");
+                            caller = new MessageServiceCreateCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
                             break;
                         case "MessageServiceListCaller":
-                            caller = new MessageServiceListCaller(testRunConfig.getConcurrentClientThreadCount(), testHelper, "https://kucuk.com/message/list");
+                            caller = new MessageServiceListCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
                             break;
                         case "MessageServiceHttp2CreateCaller":
-                            caller = new MessageServiceHttp2CreateCaller(testRunConfig.getConcurrentClientThreadCount(), testHelper, "https://kucuk.com/message");
+                            caller = new MessageServiceHttp2CreateCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
                             break;
                         case "MessageServiceHttp2ListCaller":
-                            caller = new MessageServiceHttp2ListCaller(testRunConfig.getConcurrentClientThreadCount(), testHelper, "https://kucuk.com/message/list");
+                            caller = new MessageServiceHttp2ListCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
                             break;
                     }
 
@@ -97,13 +97,15 @@ public class DropwizardClient {
                 int totalFailure = 0;
                 for (Future<CallResult> resultFuture : results) {
                     CallResult result = resultFuture.get();
-                    total += ((double) result.getDuration()) / testRunConfig.getConcurrentClientThreadCount();
+                    total += result.getDuration();
                     totalAccumulator += result.getAccumulator();
                     totalSuccess += result.getSuccessCount();
                     totalFailure += result.getFailureCount();
                 }
 
-                String resString = "Average Call Duration: " + total / results.size() +
+                double avg = (total / (double) testRunConfig.getCallCountForASingleClient()) / (double) results.size();
+
+                String resString = "Average Call Duration: " + avg +
                         " Success: " + totalSuccess +
                         " Failure: " + totalFailure +
                         " AC: " + totalAccumulator;
@@ -111,7 +113,5 @@ public class DropwizardClient {
                 resultWriter.write(resString);
             }
         }
-
-
     }
 }

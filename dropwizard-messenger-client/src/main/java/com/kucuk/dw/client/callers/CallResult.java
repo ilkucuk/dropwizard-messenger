@@ -1,4 +1,4 @@
-package com.kucuk.dw.client.caller;
+package com.kucuk.dw.client.callers;
 
 import lombok.Builder;
 import lombok.Getter;

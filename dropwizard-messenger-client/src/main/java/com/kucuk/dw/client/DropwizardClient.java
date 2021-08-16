@@ -1,11 +1,11 @@
 package com.kucuk.dw.client;
 
-import com.kucuk.dw.client.caller.CallResult;
-import com.kucuk.dw.client.caller.MessageServiceCaller;
-import com.kucuk.dw.client.caller.MessageServiceCreateCaller;
-import com.kucuk.dw.client.caller.MessageServiceHttp2CreateCaller;
-import com.kucuk.dw.client.caller.MessageServiceHttp2ListCaller;
-import com.kucuk.dw.client.caller.MessageServiceListCaller;
+import com.kucuk.dw.client.callers.CallResult;
+import com.kucuk.dw.client.callers.messageServiceCaller.CreateMessageCaller;
+import com.kucuk.dw.client.callers.messageServiceCaller.CreateMessageCallerHttp2;
+import com.kucuk.dw.client.callers.messageServiceCaller.ListMessageCaller;
+import com.kucuk.dw.client.callers.messageServiceCaller.ListMessageCallerHttp2;
+import com.kucuk.dw.client.callers.messageServiceCaller.MessageServiceCallerBase;
 import com.kucuk.dw.client.config.ClientConfig;
 import com.kucuk.dw.client.config.ConfigReader;
 import com.kucuk.dw.client.config.TestRunConfig;
@@ -64,20 +64,20 @@ public class DropwizardClient {
                 List<Future<CallResult>> results = new ArrayList<>(testRunConfig.getConcurrentClientThreadCount());
 
                 for (int i = 0; i < testRunConfig.getConcurrentClientThreadCount(); i++) {
-                    MessageServiceCaller caller = null;
+                    MessageServiceCallerBase caller = null;
 
                     switch (testRunConfig.getCaller()) {
-                        case "MessageServiceCreateCaller":
-                            caller = new MessageServiceCreateCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
+                        case "CreateMessageCaller":
+                            caller = new CreateMessageCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
                             break;
-                        case "MessageServiceListCaller":
-                            caller = new MessageServiceListCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
+                        case "CreateMessageCallerHttp2":
+                            caller = new CreateMessageCallerHttp2(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
                             break;
-                        case "MessageServiceHttp2CreateCaller":
-                            caller = new MessageServiceHttp2CreateCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
+                        case "ListMessageCaller":
+                            caller = new ListMessageCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
                             break;
-                        case "MessageServiceHttp2ListCaller":
-                            caller = new MessageServiceHttp2ListCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
+                        case "ListMessageCallerHttp2":
+                            caller = new ListMessageCallerHttp2(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
                             break;
                     }
 

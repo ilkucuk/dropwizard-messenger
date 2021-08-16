@@ -1,9 +1,10 @@
-package com.kucuk.dw.client.caller;
+package com.kucuk.dw.client.callers.messageServiceCaller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kucuk.dw.client.MessageServiceTestHelper;
-import com.kucuk.dw.service.api.CreateMessageRequest;
-import com.kucuk.dw.service.api.CreateMessageResponse;
+import com.kucuk.dw.client.callers.CallResult;
+import com.kucuk.dw.service.api.ListMessageRequest;
+import com.kucuk.dw.service.api.ListMessageResponse;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -16,9 +17,9 @@ import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
 import java.io.IOException;
 import java.time.Instant;
 
-public class MessageServiceHttp2CreateCaller implements MessageServiceCaller {
+public class ListMessageCallerHttp2 extends MessageServiceCallerBase {
 
-    private final int loopCount;
+    private final int callCount;
     private final MessageServiceTestHelper testHelper;
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -26,8 +27,8 @@ public class MessageServiceHttp2CreateCaller implements MessageServiceCaller {
 
     private long responseAccumulator = 0;
 
-    public MessageServiceHttp2CreateCaller(int loopCount, MessageServiceTestHelper testHelper, String uri) {
-        this.loopCount = loopCount;
+    public ListMessageCallerHttp2(int callCount, MessageServiceTestHelper testHelper, String uri) {
+        this.callCount = callCount;
         this.testHelper = testHelper;
 
         this.uri = uri;
@@ -44,9 +45,9 @@ public class MessageServiceHttp2CreateCaller implements MessageServiceCaller {
         httpClient.start();
 
         long start = Instant.now().toEpochMilli();
-        for (int i = 0; i < loopCount; i++) {
-            CreateMessageRequest createMessageRequest = testHelper.createRequest();
-            byte[] json = objectMapper.writeValueAsBytes(createMessageRequest);
+        for (int i = 0; i < callCount; i++) {
+            ListMessageRequest listMessageRequest = testHelper.newListMessageRequest();
+            byte[] json = objectMapper.writeValueAsBytes(listMessageRequest);
 
             Request request = httpClient.newRequest(uri)
                     .method(HttpMethod.POST)
@@ -73,8 +74,8 @@ public class MessageServiceHttp2CreateCaller implements MessageServiceCaller {
 
     private boolean processResponse(ContentResponse response) throws IOException {
         if (response.getStatus() == 200) {
-            CreateMessageResponse createMessageResponse = objectMapper.readValue(response.getContent(), CreateMessageResponse.class);
-            responseAccumulator += createMessageResponse.getResponseId() > 0 ? 1 : 0;
+            ListMessageResponse listMessageResponse = objectMapper.readValue(response.getContent(), ListMessageResponse.class);
+            responseAccumulator += listMessageResponse.getTime() > 0 ? 1 : 0;
             return true;
         } else
             return false;

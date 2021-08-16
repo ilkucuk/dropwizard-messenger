@@ -1,8 +1,9 @@
-package com.kucuk.dw.client.caller;
+package com.kucuk.dw.client.callers.messageServiceCaller;
 
 import com.kucuk.dw.client.MessageServiceTestHelper;
-import com.kucuk.dw.service.api.CreateMessageRequest;
-import com.kucuk.dw.service.api.CreateMessageResponse;
+import com.kucuk.dw.client.callers.CallResult;
+import com.kucuk.dw.service.api.ListMessageRequest;
+import com.kucuk.dw.service.api.ListMessageResponse;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -13,17 +14,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.time.Instant;
 
-public class MessageServiceCreateCaller implements MessageServiceCaller {
+public class ListMessageCaller extends MessageServiceCallerBase {
 
-    private final int loopCount;
+    private final int callCount;
     private final MessageServiceTestHelper testHelper;
     private final Client client;
     private final WebTarget target;
 
     private long responseAccumulator = 0;
 
-    public MessageServiceCreateCaller(int loopCount, MessageServiceTestHelper testHelper, String uri) {
-        this.loopCount = loopCount;
+    public ListMessageCaller(int callCount, MessageServiceTestHelper testHelper, String uri) {
+        this.callCount = callCount;
         this.testHelper = testHelper;
         this.client = ClientBuilder.newClient();
         target = client.target(uri);
@@ -39,8 +40,8 @@ public class MessageServiceCreateCaller implements MessageServiceCaller {
                 .header("Connection", "keep-alive");
 
         long start = Instant.now().toEpochMilli();
-        for (int i = 0; i < loopCount; i++) {
-            CreateMessageRequest request = testHelper.createRequest();
+        for (int i = 0; i < callCount; i++) {
+            ListMessageRequest request = testHelper.newListMessageRequest();
             Response response = invocationBuilder.post(Entity.entity(request, MediaType.APPLICATION_JSON));
             if (processResponse(response)) {
                 success++;
@@ -61,8 +62,8 @@ public class MessageServiceCreateCaller implements MessageServiceCaller {
 
     private boolean processResponse(Response response) {
         if (response.getStatus() == 200) {
-            CreateMessageResponse createMessageResponse = response.readEntity(CreateMessageResponse.class);
-            responseAccumulator += createMessageResponse.getResponseId() > 0 ? 1 : 0;
+            ListMessageResponse listMessageResponse = response.readEntity(ListMessageResponse.class);
+            responseAccumulator += listMessageResponse.getTime() > 0 ? 1 : 0;
             return true;
         } else
             return false;

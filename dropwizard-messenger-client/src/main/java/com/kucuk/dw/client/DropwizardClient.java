@@ -71,10 +71,10 @@ public class DropwizardClient {
                             caller = new CreateMessageCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
                             break;
                         case "CreateMessageCallerHttp2":
-                            caller = new CreateMessageCallerHttp2(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
+                            caller = new CreateMessageCallerHttp2(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
                             break;
                         case "ListMessageCaller":
-                            caller = new ListMessageCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message");
+                            caller = new ListMessageCaller(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
                             break;
                         case "ListMessageCallerHttp2":
                             caller = new ListMessageCallerHttp2(testRunConfig.getCallCountForASingleClient(), testHelper, "https://kucuk.com/message/list");
